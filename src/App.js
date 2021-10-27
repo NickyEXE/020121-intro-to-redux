@@ -1,64 +1,50 @@
 import React from 'react';
 import './App.css';
+import { connect } from 'react-redux'
 
-class App extends React.Component {
+function App({darkMode, toggle, text, handleChange, submit, dislike, like, likes, things}){
+  return (
+    <div className={"App" + (darkMode ? " dark" : "")}>
+      <button onClick={toggle}>Dark mode</button>
+      <h3>{text}</h3>
+      <input
+        name="text"
+        value={text}
+        onChange={handleChange }/>
+      <button onClick={submit}>Add!</button>
 
-  state = {
-    likes: 0,
-    text: '',
-    darkMode: false,
-    thangs: []
+      <h4>{likes} likes</h4>
+      <button onClick={dislike}>
+        Dislike <span role="img" aria-label="thumbs down">👎</span>
+      </button>
+      <button onClick={like}>
+        Like<span role="img" aria-label="thumbs up">👍</span>
+      </button>
+      {
+        things.map((thang, index) => <h1 key={index} >{thang}</h1>)
+      }
+    </div>
+  );
+}
+
+function mapStateToProps(state){
+  return {
+    likes: state.likes,
+    darkMode: state.darkMode,
+    text: state.text,
+    things: state.thangs
   }
+}
 
-  like = () => {
-    this.setState({ likes: this.state.likes + 1 })
-  }
-
-  dislike = () => {
-    this.setState({ likes: this.state.likes - 1 })
-  }
-
-  toggle = () => {
-    this.setState({ darkMode: !this.state.darkMode })
-  }
-
-  handleChange = (event) => {
-    this.setState({ [event.target.name]: event.target.value })
-
-  }
-
-  addText = () => {
-    this.setState({
-      text: '',
-      thangs: [this.state.text, ...this.state.thangs]
-    })
-  }
-
-  render(){
-    return (
-      <div className={"App" + (this.state.darkMode ? " dark" : "")}>
-        <button onClick={this.toggle}>Dark mode</button>
-        <h3>{this.state.text}</h3>
-        <input
-          name="text"
-          value={this.state.text}
-          onChange={(event) => this.handleChange(event)}/>
-        <button onClick={this.addText}>Add!</button>
-
-        <h4>{this.state.likes} likes</h4>
-        <button onClick={this.dislike}>
-          Dislike <span role="img" aria-label="thumbs down">👎</span>
-        </button>
-        <button onClick={this.like}>
-          Like<span role="img" aria-label="thumbs up">👍</span>
-        </button>
-        {
-          this.state.thangs.map((thang, index) => <h1 key={index} >{thang}</h1>)
-        }
-      </div>
-    );
+function mapDispatchToProps(dispatch){
+  return {
+    like: () => dispatch({type: "LIKE"}),
+    dislike: () => dispatch({type: "DISLIKE"}),
+    toggle: () => dispatch({type: "TOGGLE"}),
+    submit: () => dispatch({type: "SUBMIT"}),
+    handleChange: (event) => dispatch({type: "FORM_CHANGE", payload: event.target})
   }
 }
 
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
